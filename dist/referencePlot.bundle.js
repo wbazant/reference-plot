@@ -36,8 +36,6 @@ webpackJsonp_name_([1],{
 
 	//*------------------------------------------------------------------*
 
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 	var React = __webpack_require__(177);
 	var d3 = __webpack_require__(658);
 	var range = __webpack_require__(659);
@@ -113,8 +111,8 @@ webpackJsonp_name_([1],{
 	  });
 	};
 
-	var expressionPlotData = function expressionPlotData(chosenGene) {
-	  var dataset = adjustDatasetWithFetchedExpressionData(__webpack_require__(683), chosenGene ? fetchExpressionData(chosenGene) : {});
+	var expressionPlotData = function expressionPlotData(chosenGene, expressionData) {
+	  var dataset = adjustDatasetWithFetchedExpressionData(__webpack_require__(683), expressionData);
 
 	  var pointValues = dataset.map(function (series) {
 	    return series.data.map(function (point) {
@@ -146,7 +144,8 @@ webpackJsonp_name_([1],{
 
 	  return {
 	    dataset: applyColorScaleToDataset(dataset, colorScale),
-	    colorRanges: colorClasses
+	    colorRanges: colorClasses,
+	    options: expressionPlotOptions(chosenGene)
 	  };
 	};
 
@@ -156,14 +155,27 @@ webpackJsonp_name_([1],{
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      chosenGene: "",
+	      expressionPlotData: expressionPlotData("", {}),
 	      loading: false
 	    };
 	  },
 
-	  render: function render() {
+	  _fetchExpressionPlotData: function _fetchExpressionPlotData(chosenGene) {
 	    var _this = this;
 
+	    if (chosenGene) {
+	      this.setState({ loading: true }, fetchExpressionData(chosenGene, function (expressionData) {
+	        _this.setState({
+	          loading: false,
+	          expressionPlotData: expressionPlotData(chosenGene, expressionData)
+	        });
+	      }));
+	    } else {
+	      this.setState({ loading: false, expressionPlotData: expressionPlotData("", {}) });
+	    }
+	  },
+
+	  render: function render() {
 	    return React.createElement(
 	      'div',
 	      null,
@@ -179,9 +191,7 @@ webpackJsonp_name_([1],{
 	          'div',
 	          { className: 'large-10 large-offset-1 columns' },
 	          React.createElement(GeneAutocomplete, {
-	            onGeneChosen: function onGeneChosen(chosenGene) {
-	              _this.setState({ chosenGene: chosenGene });
-	            },
+	            onGeneChosen: this._fetchExpressionPlotData,
 	            suggesterUrlTemplate: "https://www.ebi.ac.uk/gxa/json/suggestions?query={0}&species=" })
 	        )
 	      ),
@@ -203,9 +213,7 @@ webpackJsonp_name_([1],{
 	            'div',
 	            null,
 	            React.createElement('img', { src: "https://www.ebi.ac.uk/gxa/resources/images/loading.gif" })
-	          ) : React.createElement(ScatterPlot, _extends({
-	            options: expressionPlotOptions(this.state.chosenGene)
-	          }, expressionPlotData(this.state.chosenGene)))
+	          ) : React.createElement(ScatterPlot, this.state.expressionPlotData)
 	        )
 	      )
 	    );
@@ -17523,7 +17531,13 @@ webpackJsonp_name_([1],{
 	  return result;
 	};
 
-	module.exports = randomData;
+	var main = function main(chosenGene, cb) {
+	  setTimeout(function () {
+	    return cb(randomData());
+	  }, 1000);
+	};
+
+	module.exports = main;
 
 /***/ },
 

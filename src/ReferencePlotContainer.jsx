@@ -90,10 +90,10 @@ const applyColorScaleToDataset = function (dataset, colorScale) {
   })
 }
 
-const expressionPlotData = function (chosenGene){
+const expressionPlotData = function (chosenGene, expressionData){
   var dataset = adjustDatasetWithFetchedExpressionData(
     require("./cannedGraphData.json"),
-    chosenGene? fetchExpressionData(chosenGene) : {}
+    expressionData
   );
 
 
@@ -132,7 +132,8 @@ const expressionPlotData = function (chosenGene){
 
   return {
     dataset: applyColorScaleToDataset(dataset,colorScale),
-    colorRanges: colorClasses
+    colorRanges: colorClasses,
+    options: expressionPlotOptions(chosenGene)
   }
 }
 
@@ -140,8 +141,23 @@ const ReferencePlotContainer = React.createClass({
 
   getInitialState: function() {
     return {
-      chosenGene: "",
+      expressionPlotData: expressionPlotData("",{}),
       loading: false
+    }
+  },
+
+  _fetchExpressionPlotData: function (chosenGene) {
+    if(chosenGene){
+      this.setState({loading: true},
+        fetchExpressionData(chosenGene, (expressionData) => {
+          this.setState({
+            loading: false,
+            expressionPlotData: expressionPlotData(chosenGene, expressionData)
+          })
+        })
+      )
+    } else {
+      this.setState({loading: false, expressionPlotData: expressionPlotData("", {})})
     }
   },
 
@@ -155,7 +171,7 @@ const ReferencePlotContainer = React.createClass({
         <div className="row">
           <div className="large-10 large-offset-1 columns">
             <GeneAutocomplete
-            onGeneChosen={(chosenGene) => {this.setState({chosenGene})}}
+            onGeneChosen={this._fetchExpressionPlotData}
             suggesterUrlTemplate={"https://www.ebi.ac.uk/gxa/json/suggestions?query={0}&species="}/>
           </div>
         </div>
@@ -173,8 +189,7 @@ const ReferencePlotContainer = React.createClass({
                   <img src={"https://www.ebi.ac.uk/gxa/resources/images/loading.gif"}/>
                 </div>
               : <ScatterPlot
-                options={expressionPlotOptions(this.state.chosenGene)}
-                {...expressionPlotData(this.state.chosenGene)} />
+                {...this.state.expressionPlotData} />
             }
 
           </div>

@@ -22,5 +22,9 @@ const randomData = function() {
   return result;
 }
 
+const main= function (chosenGene, cb)  {
+  setTimeout(()=> cb(randomData()),1000)
+}
 
-module.exports = randomData;
+
+module.exports = main;
