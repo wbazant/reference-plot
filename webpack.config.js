@@ -9,6 +9,11 @@ module.exports = {
             'object-hash', 'rc-slider', 'react', 'react-bootstrap', 'react-dom', 'react-highcharts',
             'react-prop-types-check']
     },
+    resolve: {
+      alias: {
+        'react': path.join(__dirname, 'node_modules/react'),
+      }
+    },
     output: {
         libraryTarget: 'var',
         library: '[name]',

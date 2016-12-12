@@ -4,15 +4,15 @@
 
 const React = require('react')
 const d3 = require('d3')
+const range = require(`lodash/range`)
 const ScatterPlot = require('./ScatterPlot.jsx')
 const fetchExpressionData = require('./fetchExpressionData.js')
+const GeneAutocomplete = require('gene-autocomplete')
 
 
 //*------------------------------------------------------------------*
 const referencePlotOptions = {
     "chart": {
-      "width": 600,
-      "height": 600,
       "type": "scatter",
       "zoomType": "xy",
       "borderWidth": 2,
@@ -38,11 +38,11 @@ const referencePlotOptions = {
     }
 }
 
-const expressionPlotOptions = Object.assign({},
+const expressionPlotOptions = (chosenGene) => Object.assign({},
   referencePlotOptions,
   {
     "title": {
-      "text": "Gene expression"
+      "text": chosenGene ? "Gene expression: "+chosenGene : "Gene expression"
     },
     tooltip: {
       formatter: function () {
@@ -90,10 +90,10 @@ const applyColorScaleToDataset = function (dataset, colorScale) {
   })
 }
 
-const expressionPlotData = function (){
+const expressionPlotData = function (chosenGene){
   var dataset = adjustDatasetWithFetchedExpressionData(
     require("./cannedGraphData.json"),
-    fetchExpressionData()
+    chosenGene? fetchExpressionData(chosenGene) : {}
   );
 
 
@@ -112,21 +112,23 @@ const expressionPlotData = function (){
       .domain(gradientDomain)
       .range(["#8cc6ff","#0000ff","#0000b3"]);
 
-  var colorClasses = [{
+  const step = (maxValue - minValue) / 10
+  const colorClasses = [{
     from: 0,
     to: 0.0000001,
     color: "gainsboro"
-  }];
-  var step = (maxValue - minValue) / 10;
-  for (var i = minValue; i <= maxValue; i = i + step) {
-    if(i>0){
-      colorClasses.push({
+  }].concat(
+    range(minValue, maxValue, step)
+    .filter((i) => i > 0 )
+    .map((i) => (
+      {
         from: i,
         to: i + step,
         color: colorScale(i)
-      })
-    }
-  }
+      }
+    ))
+  )
+
 
   return {
     dataset: applyColorScaleToDataset(dataset,colorScale),
@@ -136,6 +138,13 @@ const expressionPlotData = function (){
 
 const ReferencePlotContainer = React.createClass({
 
+  getInitialState: function() {
+    return {
+      chosenGene: "",
+      loading: false
+    }
+  },
+
 
   render: function () {
     return (
@@ -143,13 +152,33 @@ const ReferencePlotContainer = React.createClass({
         <h2>
           Two plots about science
         </h2>
-          <ScatterPlot
-            dataset={require("./cannedGraphData.json")}
-            options={referencePlotOptions}
-            colorRanges={require("./cannedColorRanges.json")} />
-          <ScatterPlot
-            options={expressionPlotOptions}
-            {...expressionPlotData()} />
+        <div className="row">
+          <div className="large-10 large-offset-1 columns">
+            <GeneAutocomplete
+            onGeneChosen={(chosenGene) => {this.setState({chosenGene})}}
+            suggesterUrlTemplate={"https://www.ebi.ac.uk/gxa/json/suggestions?query={0}&species="}/>
+          </div>
+        </div>
+
+        <div className="row">
+          <div className="small-12 medium-6 columns">
+            <ScatterPlot
+              dataset={require("./cannedGraphData.json")}
+              options={referencePlotOptions}
+              colorRanges={require("./cannedColorRanges.json")} />
+          </div>
+          <div className="small-12 medium-6 columns">
+            { this.state.loading
+              ? <div>
+                  <img src={"https://www.ebi.ac.uk/gxa/resources/images/loading.gif"}/>
+                </div>
+              : <ScatterPlot
+                options={expressionPlotOptions(this.state.chosenGene)}
+                {...expressionPlotData(this.state.chosenGene)} />
+            }
+
+          </div>
+        </div>
       </div>
     )
   }

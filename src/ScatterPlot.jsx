@@ -2,14 +2,16 @@
 
 //*------------------------------------------------------------------*
 
-var React = require('react');
-var ReactHighcharts = require('react-highcharts');
-var Highcharts = ReactHighcharts.Highcharts;
-require('highcharts-heatmap')(Highcharts);
+const React = require('react')
+const ReactHighcharts = require('react-highcharts')
+const Highcharts = ReactHighcharts.Highcharts
+require('highcharts-heatmap')(Highcharts)
+
+const shallowCompare = require('react-addons-shallow-compare')
 
 //*------------------------------------------------------------------*
 
-var baseOptions = {
+const baseOptions = {
   credits: {
     enabled: false
   },
@@ -23,9 +25,7 @@ var baseOptions = {
     text: ''
   },
   tooltip: {
-    formatter: function () {
-      return '<b>' + this.point.name + '</b>';
-    }
+    formatter: () => ('<b>' + this.point.name + '</b>')
   },
   xAxis: {
     title: {
@@ -57,14 +57,18 @@ var baseOptions = {
   }
 };
 
-var ScatterPlot = React.createClass({
+const ScatterPlot = React.createClass({
   propTypes: {
       dataset: React.PropTypes.array.isRequired,
       options: React.PropTypes.object.isRequired,
       colorRanges: React.PropTypes.array.isRequired
   },
 
-  render: function(){
+  shouldComponentUpdate(nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState);
+  },
+
+  render() {
     var config = Object.assign({},
       baseOptions,
       this.props.options,
