@@ -139,6 +139,10 @@ const expressionPlotData = function (chosenGene, expressionData){
 
 const ReferencePlotContainer = React.createClass({
 
+  propTypes: {
+    referenceDataSourceUrlTemplate: React.PropTypes.string.isRequired
+  },
+
   getInitialState: function() {
     return {
       expressionPlotData: expressionPlotData("",{}),
@@ -146,13 +150,14 @@ const ReferencePlotContainer = React.createClass({
     }
   },
 
-  _fetchExpressionPlotData: function (chosenGene) {
-    if(chosenGene){
+  _fetchExpressionPlotData: function (chosenItem) {
+    if(chosenItem.value){
+      const url = this.props.referenceDataSourceUrlTemplate.replace(/\{0\}/, JSON.stringify([chosenItem]))
       this.setState({loading: true},
-        fetchExpressionData(chosenGene, (expressionData) => {
+        fetchExpressionData(chosenItem,url, (expressionData) => {
           this.setState({
             loading: false,
-            expressionPlotData: expressionPlotData(chosenGene, expressionData)
+            expressionPlotData: expressionPlotData(chosenItem.value, expressionData)
           })
         })
       )
@@ -165,11 +170,14 @@ const ReferencePlotContainer = React.createClass({
   render: function () {
     return (
       <div>
-        <h2>
-          Two plots about science
-        </h2>
+        <h5>
+          Reference plot and gene expression
+        </h5>
         <div className="row">
           <div className="large-10 large-offset-1 columns">
+            <span style ={{margin:"2rem"}}>
+              Search for gene:
+            </span>
             <GeneAutocomplete
             onGeneChosen={this._fetchExpressionPlotData}
             suggesterUrlTemplate={"https://www.ebi.ac.uk/gxa/json/suggestions?query={0}&species="}/>

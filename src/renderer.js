@@ -12,7 +12,8 @@ exports.render = function(options) {
 
     ReactDOM.render(
         React.createElement(
-            ReferencePlotContainer
+            ReferencePlotContainer,
+            {referenceDataSourceUrlTemplate: options.referenceDataSourceUrlTemplate}
         ),
         (typeof options.target === "string") ? document.getElementById(options.target) : options.target
     );

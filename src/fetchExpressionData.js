@@ -22,8 +22,21 @@ const randomData = function() {
   return result;
 }
 
-const main= function (chosenGene, cb)  {
-  setTimeout(()=> cb(randomData()),1000)
+const main = function (chosenItem, url, cb)  {
+  let httpRequest = new XMLHttpRequest();
+  httpRequest.onload = (e) => {
+    const xhr = e.target;
+    let results;
+    if (xhr.responseType === 'json') {
+      cb(xhr.response);
+    } else {
+      cb(JSON.parse(xhr.responseText));
+    }
+  };
+
+  httpRequest.open('GET', url, true);
+  httpRequest.responseType = 'json';
+  httpRequest.send();
 }
 
 
