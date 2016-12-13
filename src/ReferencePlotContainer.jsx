@@ -174,13 +174,13 @@ const ReferencePlotContainer = React.createClass({
           Reference plot and gene expression
         </h5>
         <div className="row">
-          <div className="large-10 large-offset-1 columns">
+          <div className="small-12 medium-6 medium-offset-6 columns">
             <span style ={{margin:"2rem"}}>
               Search for gene:
             </span>
             <GeneAutocomplete
             onGeneChosen={this._fetchExpressionPlotData}
-            suggesterUrlTemplate={"https://www.ebi.ac.uk/gxa/json/suggestions?query={0}&species="}/>
+            suggesterUrlTemplate={"https://www.ebi.ac.uk/gxa/json/suggestions?query={0}&species=mus_musculus"}/>
           </div>
         </div>
 
