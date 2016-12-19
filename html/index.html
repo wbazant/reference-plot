@@ -10,8 +10,7 @@
     <link rel="stylesheet" href="https://www.ebi.ac.uk/gxa/resources/css/foundation/atlas.css" type="text/css" media="all">
     <link rel="stylesheet" href="https://www.ebi.ac.uk/gxa/resources/css/foundation/theme-atlas.css" type="text/css" media="all">
 
-    <script src="../dist/vendorCommons.bundle.js"></script>
-    <script src="../dist/main.bundle.js"></script>
+    <script src="../dist/tsne.bundle.js"></script>
     <link rel="stylesheet" href="https://www.ebi.ac.uk/gxa/resources/css/customized-bootstrap-3.3.5.css">
 </head>
 <body>
@@ -19,8 +18,7 @@
 </body>
 
 <script>
-    main.render({
-        referenceDataSourceUrlTemplate: "http://localhost:9090/gxa_sc/json/experiments/E-MTAB-4388/expression?query={0}",
+    tsne.render({
         target: "container"
     });
 

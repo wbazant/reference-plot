@@ -5,7 +5,6 @@
 const React = require('react')
 const ReactHighcharts = require('react-highcharts')
 const Highcharts = ReactHighcharts.Highcharts
-require('highcharts-heatmap')(Highcharts)
 
 const shallowCompare = require('react-addons-shallow-compare')
 
