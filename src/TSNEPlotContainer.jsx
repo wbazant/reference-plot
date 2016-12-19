@@ -7,9 +7,10 @@ const d3 = require('d3')
 const range = require(`lodash/range`)
 const ScatterPlot = require('./ScatterPlot.jsx')
 const fetchExpressionData = require('./fetchExpressionData.js')
-const GeneAutocomplete = require('gene-autocomplete')
 
+const _groupBy = require(`lodash/groupBy`)
 
+import {DropdownButton, MenuItem} from 'react-bootstrap'
 //*------------------------------------------------------------------*
 const referencePlotOptions = {
     "chart": {
@@ -20,20 +21,17 @@ const referencePlotOptions = {
     },
     "xAxis": {
       "title": {
-        "text": "Latent Variable 1 (Associated with Proliferation)"
+        "text": "Latent Variable 1"
       }
     },
     "yAxis": {
       "title": {
-        "text": "Latent Variable 1 (Associated with Differentiation)"
+        "text": "Latent Variable 2"
       }
-    },
-    "title": {
-      "text": "Th Trend Assignment Probability"
     },
     tooltip: {
       formatter: function () {
-        return '<b>' + this.point.name + '</b><br>Assignment Probability: ' + this.point.value
+        return '<b>' + this.point.label + '</b>'
       }
     }
 }
@@ -92,7 +90,7 @@ const applyColorScaleToDataset = function (dataset, colorScale) {
 
 const expressionPlotData = function (chosenGene, expressionData){
   var dataset = adjustDatasetWithFetchedExpressionData(
-    require("./cannedGraphData.json"),
+    {},//require("./cannedGraphData.json"),
     expressionData
   );
 
@@ -137,6 +135,27 @@ const expressionPlotData = function (chosenGene, expressionData){
   }
 }
 
+const getSeriesMap = (clustersChosen) => (
+   new Map(require('./clusters.json')[clustersChosen] || [])
+)
+
+const colors = ['red', '#7cb5ec', '#90ed7d', '#f7a35c', '#8085e9',
+              '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1'];
+
+const getDataSeries = (m) => {
+  const seriesGroups = _groupBy(require('./tsne-coords.json'), (point) => m.get(point.label))
+  const result = []
+  for(let ix of Object.keys(seriesGroups)) {
+    result[ix] = {
+      name: "Cluster "+ix,
+      color: colors[ix],
+      data: seriesGroups[ix]
+    }
+  }
+  return result
+}
+
+
 const ReferencePlotContainer = React.createClass({
 
   propTypes: {
@@ -145,8 +164,7 @@ const ReferencePlotContainer = React.createClass({
 
   getInitialState: function() {
     return {
-      expressionPlotData: expressionPlotData("",{}),
-      loading: false
+      clustersChosen: Object.keys(require('./clusters.json')).sort()[0]
     }
   },
 
@@ -166,7 +184,6 @@ const ReferencePlotContainer = React.createClass({
     }
   },
 
-
   render: function () {
     return (
       <div>
@@ -174,33 +191,22 @@ const ReferencePlotContainer = React.createClass({
           Reference plot and gene expression
         </h5>
         <div className="row">
-          <div className="small-12 medium-6 medium-offset-6 columns">
-            <span style ={{margin:"2rem"}}>
-              Search for gene:
-            </span>
-            <GeneAutocomplete
-            onGeneChosen={this._fetchExpressionPlotData}
-            suggesterUrlTemplate={"https://www.ebi.ac.uk/gxa/json/suggestions?query={0}&species=mus_musculus"}/>
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="small-12 medium-6 columns">
-            <ScatterPlot
-              dataset={require("./cannedGraphData.json")}
-              options={referencePlotOptions}
-              colorRanges={require("./cannedColorRanges.json")} />
-          </div>
-          <div className="small-12 medium-6 columns">
-            { this.state.loading
-              ? <div>
-                  <img src={"https://www.ebi.ac.uk/gxa/resources/images/loading.gif"}/>
-                </div>
-              : <ScatterPlot
-                {...this.state.expressionPlotData} />
-            }
-
-          </div>
+        <DropdownButton title="Clustering results" id="bg-nested-dropdown">
+          {
+            Object.keys(require('./clusters.json'))
+            .sort()
+            .map((name, ix)=> (
+              <MenuItem
+                key={ix}
+                onClick={()=>this.setState({clustersChosen: name})}
+                eventKey={ix}>{name}</MenuItem>
+            ))
+          }
+        </DropdownButton>
+        <ScatterPlot
+          dataset={getDataSeries(getSeriesMap(this.state.clustersChosen))}
+          options={referencePlotOptions}
+        />
         </div>
       </div>
     )

@@ -46,6 +46,7 @@ const baseOptions = {
   },
   plotOptions: {
     scatter: {
+      turboThreshold: 0,
       marker: {
         lineWidth: 1,
         lineColor: 'black'
@@ -60,8 +61,7 @@ const baseOptions = {
 const ScatterPlot = React.createClass({
   propTypes: {
       dataset: React.PropTypes.array.isRequired,
-      options: React.PropTypes.object.isRequired,
-      colorRanges: React.PropTypes.array.isRequired
+      options: React.PropTypes.object.isRequired
   },
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -69,13 +69,10 @@ const ScatterPlot = React.createClass({
   },
 
   render() {
-    var config = Object.assign({},
+    const config = Object.assign({},
       baseOptions,
       this.props.options,
-      {series: this.props.dataset},
-      {colorAxis: {
-        dataClasses: this.props.colorRanges
-      }}
+      {series: this.props.dataset}
     )
 
     return (

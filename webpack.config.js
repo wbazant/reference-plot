@@ -40,6 +40,8 @@ module.exports = {
             {test: /\.jsx$/, loader: 'babel', query: {presets: ['es2015', 'react']}},
             {test: /\.css$/, loader: 'style-loader!css-loader'},
             {test: /\.less$/, loader: 'style-loader!css-loader!less-loader'},
+            {test: /\.scss$/, loader: 'style-loader!css-loader!webpack-sass-loader'},
+
             {test: /\.json$/, loader: 'json'},
             {test: /\.(jpe?g|png|gif)$/i,
                 loaders: [

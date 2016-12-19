@@ -1,18 +1,18 @@
 "use strict";
 
-var React = require('react');
-var ReactDOM = require('react-dom');
+const React = require('react');
+const ReactDOM = require('react-dom');
 
 //*------------------------------------------------------------------*
 
-var ReferencePlotContainer = require('./ReferencePlotContainer.jsx');
+const TSNEPlotContainer = require('./TSNEPlotContainer.jsx');
 
 
 exports.render = function(options) {
 
     ReactDOM.render(
         React.createElement(
-            ReferencePlotContainer,
+            TSNEPlotContainer,
             {referenceDataSourceUrlTemplate: options.referenceDataSourceUrlTemplate}
         ),
         (typeof options.target === "string") ? document.getElementById(options.target) : options.target

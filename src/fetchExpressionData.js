@@ -1,8 +1,8 @@
 "use strict";
 
-const cannedData = require("./cannedGraphData.json")
+//const cannedData = require("./cannedGraphData.json")
 
-const allNames = [].concat.apply([], cannedData.map((series)=>{
+const allNames = [].concat.apply([], [].map((series)=>{
   return (
     series.data.map((point)=> point.name)
   )
