@@ -4,10 +4,7 @@ var CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
     entry: {
-        "main": './index.js',
-        dependencies: ['color', 'he', 'highcharts-custom-events', 'highcharts-heatmap', 'jquery', 'lodash',
-            'object-hash', 'rc-slider', 'react', 'react-bootstrap', 'react-dom', 'react-highcharts',
-            'react-prop-types-check']
+        "reference-plot": './index.js'
     },
     resolve: {
       alias: {
@@ -23,13 +20,7 @@ module.exports = {
     },
 
     plugins: [
-        new CleanWebpackPlugin(['dist'], {verbose: true, dry: false}),
-        new webpack.optimize.CommonsChunkPlugin({
-            name: 'dependencies',
-            filename: 'vendorCommons.bundle.js',
-            minChunks: Infinity     // Explicit definition-based split. Don’t put shared modules between main and demo
-        })                          // entries in vendor.bundle.js
-
+        new CleanWebpackPlugin(['dist'], {verbose: true, dry: false})
     ],
 
     module: {
