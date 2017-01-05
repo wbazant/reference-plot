@@ -4,7 +4,7 @@ var CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
     entry: {
-        "reference-plot": './index.js'
+        "reference_plot": './index.js'
     },
     resolve: {
       alias: {

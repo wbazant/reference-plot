@@ -1,4 +1,4 @@
-var reference-plot =
+var reference_plot =
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
