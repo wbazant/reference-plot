@@ -11,6 +11,7 @@ import {DropdownButton, MenuItem} from 'react-bootstrap'
 //*------------------------------------------------------------------*
 const referencePlotOptions = {
     "chart": {
+      width: 520,
       "type": "scatter",
       "zoomType": "xy",
       "borderWidth": 2,
